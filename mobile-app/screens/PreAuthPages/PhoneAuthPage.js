@@ -1,37 +1,69 @@
-import { useLayoutEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
-import { EvilIcons } from "@expo/vector-icons";
-import HeaderBackButton from "../../components/HeaderBackButton";
-import AuthSubmitButton from "../../components/AuthSubmitButton";
-// import OauthButton from "../mobile-app/components/OauthButton";
-import StarProp from "../../components/StarProp";
+import React, { useState, useRef, useContext } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  Button,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
+import { auth } from "../../tools/firebase";
+import { PhoneAuthProvider, signInWithPhoneNumber } from "firebase/auth";
+import AuthSubmitButton from "../../components/AuthSubmitButton";
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import { RegistrationContext } from "../../tools/RegisterProvider";
 
 export default function PhoneAuthScreen({ navigation }) {
   const [countryFocus, setcountryFocus] = useState(false);
   const [country, setcountry] = useState("");
   const [flag, setFlag] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [confirmation, setConfirmation] = useState(null);
+  const { setRegistrationData } = useContext(RegistrationContext);
+
+  const recaptchaVerifier = useRef(null);
 
   const countryData = [
     { label: "United States (+1) 🇺🇸", value: "+1", flag: "🇺🇸" },
     { label: "United Kingdom (+44) 🇬🇧", value: "+44", flag: "🇬🇧" },
     { label: "Nigeria (+234) 🇳🇬", value: "+234", flag: "🇳🇬" },
-    // Add more countries as needed
+    { label: "Israel (+972) 🇮🇱", value: "+972", flag: "🇮🇱" },
   ];
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => {
-        return <HeaderBackButton onPress={() => navigation.goBack()} />;
-      },
-      headerRight: () => {
-        return <StarProp />;
-      },
-    });
-  }, [navigation]);
+  const sendOtp = async () => {
+    try {
+      const phoneNumberWithCode = `${phoneCountryCode}${phoneNumber}`;
+      console.log(phoneNumberWithCode);
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        phoneNumberWithCode,
+        recaptchaVerifier.current
+      );
+      setConfirmation(confirmationResult);
+      console.log(confirmationResult);
+      setRegistrationData((prev) => ({
+        ...prev,
+        phoneNumber: phoneNumberWithCode,
+        country: country,
+      }));
+      navigation.navigate("phone2fa-auth", {
+        confirmation: confirmationResult,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#16171B" }}>
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={auth.app.options}
+        attemptInvisibleVerification={true}
+      />
       <View style={styles.page}>
         <Text style={styles.header}>Sign up</Text>
         <Text style={styles.subHeader}>
@@ -48,6 +80,10 @@ export default function PhoneAuthScreen({ navigation }) {
             maxHeight={300}
             labelField="label"
             valueField="value"
+            itemContainerStyle={{
+              backgroundColor: "#16171B",
+            }}
+            itemTextStyle={{ color: "white" }}
             inside={true}
             search
             placeholder="Select Country"
@@ -59,6 +95,7 @@ export default function PhoneAuthScreen({ navigation }) {
               setcountry(item.label);
               setcountryFocus(false);
               setFlag(item.flag);
+              setPhoneCountryCode(item.value);
             }}
             renderLeftIcon={() => {
               return <Text style={styles.flag}>{flag}</Text>;
@@ -82,13 +119,11 @@ export default function PhoneAuthScreen({ navigation }) {
             placeholder="Please enter a valid number"
             keyboardType="number-pad"
             placeholderTextColor="gray"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
           />
         </View>
-        <AuthSubmitButton
-          onPress={() => {
-            navigation.navigate("phone2fa-auth");
-          }}
-        />
+        <AuthSubmitButton onPress={sendOtp} />
       </View>
     </SafeAreaView>
   );
@@ -148,7 +183,9 @@ const styles = StyleSheet.create({
     color: "white",
   },
   inputSearchStyle: {
-    color: "black",
+    color: "white",
+    backgroundColor: "#16171B",
+    borderWidth: 0,
   },
   iconStyle: {
     marginRight: 10,

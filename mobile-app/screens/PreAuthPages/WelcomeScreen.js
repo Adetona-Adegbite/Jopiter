@@ -1,4 +1,12 @@
-import { Image, SafeAreaView, StyleSheet, Dimensions } from "react-native";
+import React, { useEffect, useRef } from "react";
+import {
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Dimensions,
+  Animated,
+  Easing,
+} from "react-native";
 import WelcomeCard from "../../components/WelcomeCard";
 import { useNavigation } from "@react-navigation/native";
 
@@ -10,12 +18,40 @@ export default function WelcomeScreen() {
   const navigateHandler = () => {
     navigation.navigate("auth");
   };
+
+  const fadeAnim = useRef(new Animated.Value(0.6)).current;
+
+  useEffect(() => {
+    const animateImage = Animated.loop(
+      Animated.sequence([
+        Animated.timing(fadeAnim, {
+          toValue: 0.2,
+          duration: 2000, // Increased duration for smoother animation
+          easing: Easing.ease, // Adjust the easing function for smoother transition
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0.6,
+          duration: 2000, // Increased duration for smoother animation
+          easing: Easing.ease, // Adjust the easing function for smoother transition
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animateImage.start();
+
+    return () => {
+      animateImage.stop();
+    };
+  }, []);
+
   return (
     <SafeAreaView style={styles.page}>
-      <Image
+      <Animated.Image
         source={require("../..//assets/jopiter-assets/splash-screen.png")}
-        style={styles.backgroundImage}
-        resizeMode="cover"
+        style={[styles.backgroundImage, { opacity: fadeAnim }]}
+        resizeMode="contain"
       />
       <Image
         source={require("../../assets/jopiter-assets/logo-white.png")}
@@ -38,7 +74,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "15%",
     left: windowWidth * 0.025,
-    opacity: 0.2,
     width: windowWidth * 0.95,
     height: windowHeight * 0.45, // Set to take up 50% of screen height
   },

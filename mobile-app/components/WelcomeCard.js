@@ -11,7 +11,7 @@ export default function WelcomeCard({ onPress }) {
           marginBottom: 7,
         }}
       >
-        Explore and get NFTs
+        Welcome to Jopiter.io
       </Text>
       <Text style={{ color: "lightgray", textAlign: "center" }}>
         You can buy your fashion brand in our virtual world

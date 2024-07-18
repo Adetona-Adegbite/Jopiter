@@ -1,12 +1,43 @@
-import React, { useLayoutEffect, useState, useRef } from "react";
-import { SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
+import React, {
+  useLayoutEffect,
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+} from "react";
+import {
+  Alert,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import HeaderBackButton from "../../components/HeaderBackButton";
 import AuthSubmitButton from "../../components/AuthSubmitButton";
 import StarProp from "../../components/StarProp";
+import {
+  signInWithPhoneNumber,
+  PhoneAuthProvider,
+  signInWithCredential,
+} from "firebase/auth";
+import { auth } from "../../tools/firebase";
+import { RegistrationContext } from "../../tools/RegisterProvider";
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function PhoneSMSVerificationScreen({ navigation }) {
-  const [otp, setOTP] = useState(["", "", "", "", ""]); // Initialize with 6 empty strings
+export default function PhoneSMSVerificationScreen({ navigation, route }) {
+  const [otp, setOTP] = useState(["", "", "", "", "", ""]); // Initialize with 6 empty strings
   const refs = useRef([...Array(6)].map(() => React.createRef())); // Refs for each TextInput
+  const { registrationData } = useContext(RegistrationContext);
+  const [resendTimer, setResendTimer] = useState(30);
+  const [canResend, setCanResend] = useState(false);
+  const recaptchaVerifier = useRef(null);
+
+  const { confirmation } = route.params;
 
   const handleOTPChange = (index, value) => {
     const newOTP = [...otp];
@@ -14,29 +45,103 @@ export default function PhoneSMSVerificationScreen({ navigation }) {
     setOTP(newOTP);
 
     // Automatically move focus to the next input box if value is entered
-    if (value && index < 4) {
+    if (value && index < 5) {
       refs.current[index + 1].current.focus();
     }
   };
+
+  const verifyOtp = async () => {
+    const otpString = otp.join(""); // Merge OTP array into a single string
+    try {
+      const credential = PhoneAuthProvider.credential(
+        confirmation.verificationId,
+        otpString
+      );
+      await signInWithCredential(auth, credential);
+      console.log("success");
+      // navigation.navigate("auth-done");
+      await registerHandler();
+    } catch (error) {
+      console.error("Verification failed:", error);
+      // Handle error, show message to the user
+    }
+  };
+
+  const registerHandler = async () => {
+    try {
+      const response = await axios.post("http://172.20.10.3:3000/auth/signup", {
+        email: registrationData.email,
+        password: registrationData.password,
+        country: registrationData.country,
+        phone: registrationData.phoneNumber,
+      });
+
+      // console.log(response.ok);
+      // console.log(response.data);
+      // const data = await JSON.parse(response.data);
+      // console.log(data);
+      if (!response.data.ok) {
+        Alert.alert(response.data.error);
+        return;
+      }
+
+      await AsyncStorage.setItem("user-id", response.data.id.toString());
+      navigation.navigate("auth-done");
+    } catch (e) {
+      console.error(e);
+      // Alert.alert();
+    }
+  };
+
+  const resendOtp = async () => {
+    try {
+      const newConfirmation = await signInWithPhoneNumber(
+        auth,
+        registrationData.phoneNumber,
+        recaptchaVerifier.current
+      );
+      route.params.confirmation = newConfirmation;
+      setCanResend(false);
+      setResendTimer(30);
+    } catch (error) {
+      console.error("Resend OTP failed:", error);
+      // Handle error, show message to the user
+    }
+  };
+
+  useEffect(() => {
+    let timer;
+    if (resendTimer > 0) {
+      timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+    } else {
+      setCanResend(true);
+    }
+    return () => clearTimeout(timer);
+  }, [resendTimer]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => {
         return <HeaderBackButton onPress={() => navigation.goBack()} />;
       },
-      headerRight: () => {
-        return <StarProp />;
-      },
+      // headerRight: () => {
+      //   return <StarProp />;
+      // },
     });
   }, [navigation]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#16171B" }}>
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={auth.app.options}
+        attemptInvisibleVerification={true}
+      />
       <View style={styles.page}>
         <Text style={styles.header}>Verify your phone number</Text>
         <Text style={styles.subHeader}>
-          We've sent an SMS with an activation code to your phone +234
-          0123456789
+          We've sent an SMS with an activation code to your phone{" "}
+          {registrationData.phoneNumber}
         </Text>
         <View style={styles.formItem}>
           <View style={styles.container}>
@@ -62,13 +167,17 @@ export default function PhoneSMSVerificationScreen({ navigation }) {
         </View>
         <Text style={{ color: "rgba(255,255,255,0.4)", marginBottom: 25 }}>
           I didn't receive the code
-          <Text style={{ color: "white", fontSize: 14 }}> Resend</Text>
+          {canResend ? (
+            <TouchableOpacity onPress={resendOtp}>
+              <Text style={{ color: "white", fontSize: 14 }}> Resend</Text>
+            </TouchableOpacity>
+          ) : (
+            <Text style={{ color: "white", fontSize: 14 }}>
+              Resend in {resendTimer}s
+            </Text>
+          )}
         </Text>
-        <AuthSubmitButton
-          onPress={() => {
-            navigation.navigate("auth-done");
-          }}
-        />
+        <AuthSubmitButton onPress={verifyOtp} />
       </View>
     </SafeAreaView>
   );
@@ -82,7 +191,7 @@ const styles = StyleSheet.create({
     alignItems: "center", // Center horizontally
   },
   header: {
-    fontSize: 32,
+    fontSize: 28,
     color: "white",
     marginBottom: 10,
     fontWeight: "bold",
@@ -98,6 +207,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    width: "90%",
+    alignSelf: "center",
   },
   formItem: {
     marginBottom: 10,

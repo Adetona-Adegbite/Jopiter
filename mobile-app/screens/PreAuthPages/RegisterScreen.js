@@ -1,7 +1,9 @@
-import { useLayoutEffect } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import {
+  Alert,
   Button,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -13,22 +15,66 @@ import { useNavigation } from "@react-navigation/native";
 import AuthSubmitButton from "../../components/AuthSubmitButton";
 import OauthButton from "../../components/OauthButton";
 import StarProp from "../../components/StarProp";
+import { RegistrationContext } from "../../tools/RegisterProvider";
 
 export default function RegisterScreen({ navigation }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmedPassword, setConfirmedPassword] = useState("");
   const navigationFunc = useNavigation();
+  const { setRegistrationData } = useContext(RegistrationContext);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+
+  const validateEmail = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex pattern for email validation
+    setIsValidEmail(emailRegex.test(email)); // Update isValidEmail state based on regex test
+    return;
+  };
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => {
         return <HeaderBackButton onPress={() => navigation.goBack()} />;
       },
-      headerRight: () => {
-        return <StarProp />;
-      },
+      // headerRight: () => {
+      //   return <StarProp />;
+      // },
     });
   }, []);
+  const registrationHandler = async () => {
+    try {
+      validateEmail();
+
+      // Basic input validation
+      if (!email || !password || !confirmedPassword) {
+        throw new Error("All fields are required");
+      }
+
+      if (!isValidEmail) {
+        throw new Error("Please enter a valid email");
+      }
+
+      if (password.length < 8) {
+        throw new Error("Password must be more than 8 characters");
+      }
+
+      if (password !== confirmedPassword) {
+        throw new Error("Passwords don't match");
+      }
+
+      // If all validations pass, proceed with registration
+      setRegistrationData((prev) => ({ ...prev, email, password }));
+      navigationFunc.navigate("phone-auth");
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#16171B" }}>
-      <View style={styles.page}>
+      <ScrollView
+        style={styles.page}
+        contentContainerStyle={{ alignItems: "center" }}
+      >
         <Text style={styles.header}>Sign up</Text>
         <View style={styles.formItem}>
           <Text style={styles.formItemTitle}>Email</Text>
@@ -37,6 +83,8 @@ export default function RegisterScreen({ navigation }) {
             placeholder="example@gmail.com"
             keyboardType="email-address"
             placeholderTextColor="gray"
+            value={email}
+            onChangeText={setEmail}
           />
         </View>
         <View style={styles.formItem}>
@@ -46,6 +94,9 @@ export default function RegisterScreen({ navigation }) {
             placeholder="must be 8 characters"
             keyboardType="visible-password"
             placeholderTextColor="gray"
+            value={password}
+            secureTextEntry={true}
+            onChangeText={setPassword}
           />
         </View>
         <View style={styles.formItem}>
@@ -54,12 +105,13 @@ export default function RegisterScreen({ navigation }) {
             style={styles.formItemInput}
             placeholder="repeat password"
             keyboardType="visible-password"
+            secureTextEntry={true}
+            value={confirmedPassword}
+            onChangeText={setConfirmedPassword}
             placeholderTextColor="gray"
           />
         </View>
-        <AuthSubmitButton
-          onPress={() => navigationFunc.navigate("phone-auth")}
-        />
+        <AuthSubmitButton onPress={registrationHandler} />
         <View style={styles.lineContainer}>
           <View style={styles.line} />
           <Text style={styles.orText}>or Register with</Text>
@@ -74,7 +126,7 @@ export default function RegisterScreen({ navigation }) {
           Already have an Account?{" "}
           <Text style={{ color: "white" }}>Log in</Text>
         </Text>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -84,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: "20%",
     paddingHorizontal: 25,
-    alignItems: "center", // Center horizontally
+    // Center horizontally
   },
   header: {
     fontSize: 32,

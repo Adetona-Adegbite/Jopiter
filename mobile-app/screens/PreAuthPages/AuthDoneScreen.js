@@ -1,3 +1,4 @@
+import React, { useEffect, useRef } from "react";
 import {
   Image,
   SafeAreaView,
@@ -5,6 +6,8 @@ import {
   Dimensions,
   Text,
   View,
+  Animated,
+  Easing,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AuthPageButton from "../../components/AuthPageButton";
@@ -14,15 +17,39 @@ const windowHeight = Dimensions.get("window").height;
 
 export default function AuthDoneScreen() {
   const navigation = useNavigation();
-  const navigateHandler = () => {
-    navigation.navigate("auth");
-  };
+  const fadeAnim = useRef(new Animated.Value(0.2)).current;
+
+  useEffect(() => {
+    const animateImage = Animated.loop(
+      Animated.sequence([
+        Animated.timing(fadeAnim, {
+          toValue: 0.2,
+          duration: 2000, // Adjust duration as needed
+          easing: Easing.ease, // Use linear easing for consistent transition
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0.6,
+          duration: 2000, // Adjust duration as needed
+          easing: Easing.ease, // Use linear easing for consistent transition
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    animateImage.start();
+
+    return () => {
+      animateImage.stop();
+    };
+  }, []);
+
   return (
     <SafeAreaView style={styles.page}>
-      <Image
+      <Animated.Image
         source={require("../../assets/jopiter-assets/splash-screen.png")}
-        style={styles.backgroundImage}
-        resizeMode="cover"
+        style={[styles.backgroundImage, { opacity: fadeAnim }]}
+        resizeMode="contain"
       />
       <Image
         source={require("../../assets/jopiter-assets/logo-white.png")}

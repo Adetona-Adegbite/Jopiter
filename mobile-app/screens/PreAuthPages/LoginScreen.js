@@ -1,9 +1,19 @@
-import { useLayoutEffect } from "react";
-import { SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useLayoutEffect, useState } from "react";
+import {
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import AuthSubmitButton from "../../components/AuthSubmitButton";
 import HeaderBackButton from "../../components/HeaderBackButton";
 import OauthButton from "../../components/OauthButton";
 import StarProp from "../../components/StarProp";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen({ navigation }) {
   useLayoutEffect(() => {
@@ -11,14 +21,52 @@ export default function LoginScreen({ navigation }) {
       headerLeft: () => {
         return <HeaderBackButton onPress={() => navigation.goBack()} />;
       },
-      headerRight: () => {
-        return <StarProp />;
-      },
+      // headerRight: () => {
+      //   return <StarProp />;
+      // },
     });
   }, []);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const loginHandler = async () => {
+    try {
+      const response = await axios.post("http://172.20.10.3:3000/auth/login", {
+        email: email,
+        password: password,
+      });
+
+      // console.log(response.data.status); // Assuming backend sends back user object on success
+      if (response.data.status !== 201) {
+        if (response.data.status === 404) {
+          Alert.alert("User Not Found", "Please try signing up ");
+        } else if (response.data.status === 401) {
+          Alert.alert(
+            "Invalid Credentials",
+            "Please check your email and password."
+          );
+        } else if (response.data.status === 500) {
+          Alert.alert("Login Failed.", "Please try again later");
+        }
+      }
+      const user = response.data;
+
+      // // Handle success case
+      console.log(user.id.toString());
+      await AsyncStorage.setItem("user-id", user.id.toString());
+      Alert.alert("Login Successful", "Welcome back!");
+      navigation.navigate("auth-done");
+    } catch (error) {
+      // Alert.alert("Login Failed. Please try again later");
+      console.error("Login failed:");
+    }
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#16171B" }}>
-      <View style={styles.page}>
+      <ScrollView
+        style={styles.page}
+        contentContainerStyle={{ alignItems: "center" }}
+      >
         <Text style={styles.header}>Hi, Welcome! 👋</Text>
         <View style={styles.formItem}>
           <Text style={styles.formItemTitle}>Email</Text>
@@ -27,6 +75,8 @@ export default function LoginScreen({ navigation }) {
             placeholder="example@gmail.com"
             keyboardType="email-address"
             placeholderTextColor="gray"
+            value={email}
+            onChangeText={setEmail}
           />
         </View>
         <View style={[styles.formItem, { marginBottom: 40 }]}>
@@ -35,6 +85,9 @@ export default function LoginScreen({ navigation }) {
             style={styles.formItemInput}
             placeholder="password"
             keyboardType="visible-password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
             placeholderTextColor="gray"
           />
           <Text style={{ color: "#ccc", alignSelf: "flex-end" }}>
@@ -42,11 +95,7 @@ export default function LoginScreen({ navigation }) {
           </Text>
         </View>
 
-        <AuthSubmitButton
-          onPress={() => {
-            navigation.navigate("auth-done");
-          }}
-        />
+        <AuthSubmitButton onPress={loginHandler} />
         <View style={styles.lineContainer}>
           <View style={styles.line} />
           <Text style={styles.orText}>or with</Text>
@@ -61,7 +110,7 @@ export default function LoginScreen({ navigation }) {
           Don't have an Account?
           <Text style={{ color: "white" }}>Sign up</Text>
         </Text>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -71,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: "20%",
     paddingHorizontal: 25,
-    alignItems: "center", // Center horizontally
+    // Center horizontally
   },
   header: {
     fontSize: 32,

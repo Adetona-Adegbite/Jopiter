@@ -35,6 +35,7 @@ import Store from "./screens/MainPages/Store";
 import Cart from "./screens/MainPages/Cart";
 import News from "./screens/MainPages/News";
 import Settings from "./screens/MainPages/Settings";
+import { RegistrationProvider } from "./tools/RegisterProvider";
 
 const windowHeight = Dimensions.get("screen").height;
 const windowWidth = Dimensions.get("screen").width;
@@ -446,128 +447,130 @@ export default function App() {
     },
   });
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          cardStyleInterpolator: forFade,
-        }}
-      >
-        <Stack.Screen
-          options={{ headerShown: false }}
-          name="welcome"
-          component={WelcomeScreen}
-        />
-        <Stack.Screen name="auth" component={AuthScreen} />
-        <Stack.Screen
-          options={{
-            headerTransparent: true,
-            headerShown: true,
-
-            headerTitle: () => {
-              return (
-                <Image
-                  source={require("./assets/jopiter-assets/logo-white.png")}
-                  style={{
-                    width: windowWidth * 0.2,
-                    height: windowHeight * 0.02,
-                  }}
-                />
-              );
-            },
-          }}
-          name="register"
-          component={RegisterScreen}
-        />
-        <Stack.Screen
-          options={{
-            headerTransparent: true,
-            headerShown: true,
-
-            headerTitle: () => {
-              return (
-                <Image
-                  source={require("./assets/jopiter-assets/logo-white.png")}
-                  style={{
-                    width: windowWidth * 0.2,
-                    height: windowHeight * 0.02,
-                  }}
-                />
-              );
-            },
-          }}
-          name="login"
-          component={LoginScreen}
-        />
-        <Stack.Screen
-          options={{
-            headerTransparent: true,
-            headerShown: true,
-
-            headerTitle: () => {
-              return (
-                <Image
-                  source={require("./assets/jopiter-assets/logo-white.png")}
-                  style={{
-                    width: windowWidth * 0.2,
-                    height: windowHeight * 0.02,
-                  }}
-                />
-              );
-            },
-          }}
-          name="phone-auth"
-          component={PhoneAuthScreen}
-        />
-        <Stack.Screen
-          options={{
-            headerTransparent: true,
-            headerShown: true,
-
-            headerTitle: () => {
-              return (
-                <Image
-                  source={require("./assets/jopiter-assets/logo-white.png")}
-                  style={{
-                    width: windowWidth * 0.2,
-                    height: windowHeight * 0.02,
-                  }}
-                />
-              );
-            },
-          }}
-          name="phone2fa-auth"
-          component={PhoneSMSVerificationScreen}
-        />
-        <Stack.Screen
-          options={{
-            headerTransparent: true,
+    <RegistrationProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
             headerShown: false,
+            cardStyleInterpolator: forFade,
+          }}
+        >
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="welcome"
+            component={WelcomeScreen}
+          />
+          <Stack.Screen name="auth" component={AuthScreen} />
+          <Stack.Screen
+            options={{
+              headerTransparent: true,
+              headerShown: true,
 
-            headerTitle: () => {
-              return (
-                <Image
-                  source={require("./assets/jopiter-assets/logo-white.png")}
-                  style={{
-                    width: windowWidth * 0.2,
-                    height: windowHeight * 0.02,
-                  }}
-                />
-              );
-            },
-          }}
-          name="auth-done"
-          component={AuthDoneScreen}
-        />
-        <Stack.Screen
-          options={{
-            headerShown: false,
-          }}
-          name="home"
-          component={HomePageNavigator}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+              headerTitle: () => {
+                return (
+                  <Image
+                    source={require("./assets/jopiter-assets/logo-white.png")}
+                    style={{
+                      width: windowWidth * 0.2,
+                      height: windowHeight * 0.02,
+                    }}
+                  />
+                );
+              },
+            }}
+            name="register"
+            component={RegisterScreen}
+          />
+          <Stack.Screen
+            options={{
+              headerTransparent: true,
+              headerShown: true,
+
+              headerTitle: () => {
+                return (
+                  <Image
+                    source={require("./assets/jopiter-assets/logo-white.png")}
+                    style={{
+                      width: windowWidth * 0.2,
+                      height: windowHeight * 0.02,
+                    }}
+                  />
+                );
+              },
+            }}
+            name="login"
+            component={LoginScreen}
+          />
+          <Stack.Screen
+            options={{
+              headerTransparent: true,
+              headerShown: true,
+
+              headerTitle: () => {
+                return (
+                  <Image
+                    source={require("./assets/jopiter-assets/logo-white.png")}
+                    style={{
+                      width: windowWidth * 0.2,
+                      height: windowHeight * 0.02,
+                    }}
+                  />
+                );
+              },
+            }}
+            name="phone-auth"
+            component={PhoneAuthScreen}
+          />
+          <Stack.Screen
+            options={{
+              headerTransparent: true,
+              headerShown: true,
+
+              headerTitle: () => {
+                return (
+                  <Image
+                    source={require("./assets/jopiter-assets/logo-white.png")}
+                    style={{
+                      width: windowWidth * 0.2,
+                      height: windowHeight * 0.02,
+                    }}
+                  />
+                );
+              },
+            }}
+            name="phone2fa-auth"
+            component={PhoneSMSVerificationScreen}
+          />
+          <Stack.Screen
+            options={{
+              headerTransparent: true,
+              headerShown: false,
+
+              headerTitle: () => {
+                return (
+                  <Image
+                    source={require("./assets/jopiter-assets/logo-white.png")}
+                    style={{
+                      width: windowWidth * 0.2,
+                      height: windowHeight * 0.02,
+                    }}
+                  />
+                );
+              },
+            }}
+            name="auth-done"
+            component={AuthDoneScreen}
+          />
+          <Stack.Screen
+            options={{
+              headerShown: false,
+            }}
+            name="home"
+            component={HomePageNavigator}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </RegistrationProvider>
   );
 }
 
