@@ -60,7 +60,7 @@ export default function PhoneSMSVerificationScreen({ navigation, route }) {
       await signInWithCredential(auth, credential);
       console.log("success");
       // navigation.navigate("auth-done");
-      await registerHandler();
+      navigation.navigate("bio-data");
     } catch (error) {
       console.error("Verification failed:", error);
       // Handle error, show message to the user
@@ -69,12 +69,12 @@ export default function PhoneSMSVerificationScreen({ navigation, route }) {
 
   const registerHandler = async () => {
     try {
-      const response = await axios.post("http://172.20.10.3:3000/auth/signup", {
-        email: registrationData.email,
-        password: registrationData.password,
-        country: registrationData.country,
-        phone: registrationData.phoneNumber,
-      });
+      // const response = await axios.post("http://172.20.10.3:3000/auth/signup", {
+      //   email: registrationData.email,
+      //   password: registrationData.password,
+      //   country: registrationData.country,
+      //   phone: registrationData.phoneNumber,
+      // });
 
       // console.log(response.ok);
       // console.log(response.data);
@@ -86,7 +86,7 @@ export default function PhoneSMSVerificationScreen({ navigation, route }) {
       }
 
       await AsyncStorage.setItem("user-id", response.data.id.toString());
-      navigation.navigate("auth-done");
+      navigation.navigate("bio-data");
     } catch (e) {
       console.error(e);
       // Alert.alert();

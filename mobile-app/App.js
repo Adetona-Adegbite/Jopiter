@@ -36,10 +36,12 @@ import Cart from "./screens/MainPages/Cart";
 import News from "./screens/MainPages/News";
 import Settings from "./screens/MainPages/Settings";
 import { RegistrationProvider } from "./tools/RegisterProvider";
+import BioDataScreen from "./screens/PreAuthPages/BioDataScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ChatsList from "./screens/MainPages/ChatsList";
 
 const windowHeight = Dimensions.get("screen").height;
 const windowWidth = Dimensions.get("screen").width;
-
 const CustomDrawerContent = (props) => {
   return (
     <DrawerContentScrollView {...props}>
@@ -98,7 +100,7 @@ const CustomDrawerContent = (props) => {
           marginBottom: 20,
         }}
       >
-        <Text style={{ color: "#746D75", fontSize: 11 }}>+234 0123456789</Text>
+        {/* <Text style={{ color: "#746D75", fontSize: 11 }}>+234 0123456789</Text> */}
         <Text style={{ color: "#746D75", fontSize: 11 }}>email@email.com</Text>
       </View>
       <DrawerItemList {...props} />
@@ -142,7 +144,7 @@ function HomePageNavigator({ navigation }) {
         ),
         headerLeftContainerStyle: {
           position: "relative",
-          left: windowWidth * 0.05,
+          left: windowWidth * 0.0,
         },
         headerRight: () => {
           return <ProfileContainer />;
@@ -174,6 +176,182 @@ function HomePageNavigator({ navigation }) {
             />
           ),
           drawerLabel: "Home",
+
+          headerTitle: () => {
+            return (
+              <Image
+                source={require("./assets/jopiter-assets/logo-white.png")}
+                style={{
+                  width: 80,
+                  height: 80,
+                }}
+              />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="chats"
+        component={ChatsList}
+        options={{
+          headerTransparent: true,
+          headerTintColor: "white",
+          drawerIcon: () => (
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={25}
+              color="white"
+            />
+          ),
+          drawerLabel: "Chats",
+
+          headerTitle: () => {
+            return (
+              <Image
+                source={require("./assets/jopiter-assets/logo-white.png")}
+                style={{
+                  width: windowWidth * 0.2,
+                  height: windowHeight * 0.02,
+                }}
+              />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="post"
+        component={Profile}
+        options={{
+          headerTransparent: true,
+          headerTintColor: "white",
+          drawerIcon: () => (
+            <Ionicons name="add-outline" size={25} color="white" />
+          ),
+          drawerLabel: "Post",
+
+          headerTitle: () => {
+            return (
+              <Image
+                source={require("./assets/jopiter-assets/logo-white.png")}
+                style={{
+                  width: windowWidth * 0.2,
+                  height: windowHeight * 0.02,
+                }}
+              />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="cart"
+        component={Cart}
+        options={{
+          headerTransparent: true,
+          headerTintColor: "white",
+          drawerIcon: () => (
+            <Ionicons name="cart-outline" size={25} color="white" />
+          ),
+          drawerLabel: "My Cart",
+
+          headerTitle: () => {
+            return (
+              <Image
+                source={require("./assets/jopiter-assets/logo-white.png")}
+                style={{
+                  width: windowWidth * 0.2,
+                  height: windowHeight * 0.02,
+                }}
+              />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="closet"
+        component={Closet}
+        options={{
+          headerTransparent: true,
+          headerTintColor: "white",
+          drawerIcon: () => (
+            <MaterialCommunityIcons
+              name="wardrobe-outline"
+              size={25}
+              color="white"
+            />
+          ),
+          drawerLabel: "Closet",
+
+          headerTitle: () => {
+            return (
+              <Image
+                source={require("./assets/jopiter-assets/logo-white.png")}
+                style={{
+                  width: windowWidth * 0.2,
+                  height: windowHeight * 0.02,
+                }}
+              />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="collections"
+        component={Collections}
+        options={{
+          headerTransparent: true,
+          headerTintColor: "white",
+          drawerIcon: () => (
+            <FontAwesome6 name="boxes-stacked" size={22} color="white" />
+          ),
+          drawerLabel: "Collections",
+
+          headerTitle: () => {
+            return (
+              <Image
+                source={require("./assets/jopiter-assets/logo-white.png")}
+                style={{
+                  width: windowWidth * 0.2,
+                  height: windowHeight * 0.02,
+                }}
+              />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="store"
+        component={Store}
+        options={{
+          headerTransparent: true,
+          headerTintColor: "white",
+          drawerIcon: () => (
+            <Ionicons name="storefront-outline" size={25} color="white" />
+          ),
+          drawerLabel: "Store",
+
+          headerTitle: () => {
+            return (
+              <Image
+                source={require("./assets/jopiter-assets/logo-white.png")}
+                style={{
+                  width: windowWidth * 0.2,
+                  height: windowHeight * 0.02,
+                }}
+              />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="notifications"
+        component={Profile}
+        options={{
+          headerTransparent: true,
+          headerTintColor: "white",
+          drawerIcon: () => (
+            <Ionicons name="notifications-outline" size={25} color="white" />
+          ),
+          drawerLabel: "Notifications",
 
           headerTitle: () => {
             return (
@@ -240,31 +418,8 @@ function HomePageNavigator({ navigation }) {
           },
         }}
       />
-      <Drawer.Screen
-        name="collections"
-        component={Collections}
-        options={{
-          headerTransparent: true,
-          headerTintColor: "white",
-          drawerIcon: () => (
-            <FontAwesome6 name="boxes-stacked" size={22} color="white" />
-          ),
-          drawerLabel: "Collections",
 
-          headerTitle: () => {
-            return (
-              <Image
-                source={require("./assets/jopiter-assets/logo-white.png")}
-                style={{
-                  width: windowWidth * 0.2,
-                  height: windowHeight * 0.02,
-                }}
-              />
-            );
-          },
-        }}
-      />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="nfts"
         component={NFTs}
         options={{
@@ -288,34 +443,7 @@ function HomePageNavigator({ navigation }) {
           },
         }}
       />
-      <Drawer.Screen
-        name="closet"
-        component={Closet}
-        options={{
-          headerTransparent: true,
-          headerTintColor: "white",
-          drawerIcon: () => (
-            <MaterialCommunityIcons
-              name="wardrobe-outline"
-              size={25}
-              color="white"
-            />
-          ),
-          drawerLabel: "Closet",
 
-          headerTitle: () => {
-            return (
-              <Image
-                source={require("./assets/jopiter-assets/logo-white.png")}
-                style={{
-                  width: windowWidth * 0.2,
-                  height: windowHeight * 0.02,
-                }}
-              />
-            );
-          },
-        }}
-      />
       <Drawer.Screen
         name="exhibition"
         component={Exhibition}
@@ -339,56 +467,9 @@ function HomePageNavigator({ navigation }) {
             );
           },
         }}
-      />
-      <Drawer.Screen
-        name="store"
-        component={Store}
-        options={{
-          headerTransparent: true,
-          headerTintColor: "white",
-          drawerIcon: () => (
-            <Ionicons name="storefront-outline" size={25} color="white" />
-          ),
-          drawerLabel: "Store",
+      /> */}
 
-          headerTitle: () => {
-            return (
-              <Image
-                source={require("./assets/jopiter-assets/logo-white.png")}
-                style={{
-                  width: windowWidth * 0.2,
-                  height: windowHeight * 0.02,
-                }}
-              />
-            );
-          },
-        }}
-      />
-      <Drawer.Screen
-        name="cart"
-        component={Cart}
-        options={{
-          headerTransparent: true,
-          headerTintColor: "white",
-          drawerIcon: () => (
-            <Ionicons name="cart-outline" size={25} color="white" />
-          ),
-          drawerLabel: "My Cart",
-
-          headerTitle: () => {
-            return (
-              <Image
-                source={require("./assets/jopiter-assets/logo-white.png")}
-                style={{
-                  width: windowWidth * 0.2,
-                  height: windowHeight * 0.02,
-                }}
-              />
-            );
-          },
-        }}
-      />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="news"
         component={News}
         options={{
@@ -411,7 +492,7 @@ function HomePageNavigator({ navigation }) {
             );
           },
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="settings"
         component={Settings}
@@ -540,6 +621,26 @@ export default function App() {
             }}
             name="phone2fa-auth"
             component={PhoneSMSVerificationScreen}
+          />
+          <Stack.Screen
+            options={{
+              headerTransparent: true,
+              headerShown: false,
+
+              headerTitle: () => {
+                return (
+                  <Image
+                    source={require("./assets/jopiter-assets/logo-white.png")}
+                    style={{
+                      width: windowWidth * 0.2,
+                      height: windowHeight * 0.02,
+                    }}
+                  />
+                );
+              },
+            }}
+            name="bio-data"
+            component={BioDataScreen}
           />
           <Stack.Screen
             options={{

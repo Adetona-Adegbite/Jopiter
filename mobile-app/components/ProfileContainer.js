@@ -5,8 +5,8 @@ export default function ProfileContainer() {
 }
 const styles = StyleSheet.create({
   container: {
-    width: 40,
-    height: "90%",
+    width: 50,
+    height: 50,
     borderRadius: 50,
     backgroundColor: "white",
   },

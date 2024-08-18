@@ -22,4 +22,8 @@ export class User {
   @IsString()
   @IsNotEmpty()
   country: string;
+
+  @IsString()
+  @IsNotEmpty()
+  category: string;
 }

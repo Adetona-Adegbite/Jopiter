@@ -36,6 +36,7 @@ export class AuthService {
           hash: hash,
           phone_number: userdata.phone,
           country: userdata.country,
+          category: userdata.category,
         },
       });
 
