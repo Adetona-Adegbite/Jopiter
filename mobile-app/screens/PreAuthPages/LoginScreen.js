@@ -31,7 +31,7 @@ export default function LoginScreen({ navigation }) {
 
   const loginHandler = async () => {
     try {
-      const response = await axios.post("http://172.20.10.3:3000/auth/login", {
+      const response = await axios.post("http://10.9.5.167:3000/auth/login", {
         email: email,
         password: password,
       });
@@ -77,6 +77,7 @@ export default function LoginScreen({ navigation }) {
             placeholderTextColor="gray"
             value={email}
             onChangeText={setEmail}
+            autoCapitalize={false}
           />
         </View>
         <View style={[styles.formItem, { marginBottom: 40 }]}>

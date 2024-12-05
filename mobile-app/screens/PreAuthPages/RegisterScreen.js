@@ -85,6 +85,7 @@ export default function RegisterScreen({ navigation }) {
             placeholderTextColor="gray"
             value={email}
             onChangeText={setEmail}
+            autoCapitalize={false}
           />
         </View>
         <View style={styles.formItem}>

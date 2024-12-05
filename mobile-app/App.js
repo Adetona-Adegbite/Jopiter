@@ -5,7 +5,14 @@ import {
   TransitionPresets,
 } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import WelcomeScreen from "./screens/PreAuthPages/WelcomeScreen";
 import AuthScreen from "./screens/PreAuthPages/AuthScreen";
 import RegisterScreen from "./screens/PreAuthPages/RegisterScreen";
@@ -39,10 +46,24 @@ import { RegistrationProvider } from "./tools/RegisterProvider";
 import BioDataScreen from "./screens/PreAuthPages/BioDataScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChatsList from "./screens/MainPages/ChatsList";
+import FollowingPage from "./screens/MainPages/Following";
+import FollowersPage from "./screens/MainPages/Followers";
+import PostPage from "./screens/MainPages/Post";
 
 const windowHeight = Dimensions.get("screen").height;
 const windowWidth = Dimensions.get("screen").width;
+const Stack = createStackNavigator();
+const ProfilePage = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="profile" component={Profile} />
+      <Stack.Screen name="following" component={FollowingPage} />
+      <Stack.Screen name="followers" component={FollowersPage} />
+    </Stack.Navigator>
+  );
+};
 const CustomDrawerContent = (props) => {
+  const navigation = useNavigation();
   return (
     <DrawerContentScrollView {...props}>
       <Image
@@ -115,9 +136,15 @@ const CustomDrawerContent = (props) => {
         <Text style={{ color: "white", fontSize: 11 }}>
           Jopiter.io Version - V1.00
         </Text>
-        <Text style={{ color: "red", fontSize: 11, fontWeight: 600 }}>
-          Logout
-        </Text>
+        <Pressable
+          onPress={() => {
+            navigation.navigate("auth");
+          }}
+        >
+          <Text style={{ color: "red", fontSize: 11, fontWeight: 600 }}>
+            Logout
+          </Text>
+        </Pressable>
       </View>
     </DrawerContentScrollView>
   );
@@ -220,7 +247,7 @@ function HomePageNavigator({ navigation }) {
       />
       <Drawer.Screen
         name="post"
-        component={Profile}
+        component={PostPage}
         options={{
           headerTransparent: true,
           headerTintColor: "white",
@@ -266,7 +293,7 @@ function HomePageNavigator({ navigation }) {
           },
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="closet"
         component={Closet}
         options={{
@@ -293,8 +320,8 @@ function HomePageNavigator({ navigation }) {
             );
           },
         }}
-      />
-      <Drawer.Screen
+      /> */}
+      {/* <Drawer.Screen
         name="collections"
         component={Collections}
         options={{
@@ -317,8 +344,8 @@ function HomePageNavigator({ navigation }) {
             );
           },
         }}
-      />
-      <Drawer.Screen
+      /> */}
+      {/* <Drawer.Screen
         name="store"
         component={Store}
         options={{
@@ -365,11 +392,12 @@ function HomePageNavigator({ navigation }) {
             );
           },
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="profile"
-        component={Profile}
+        component={ProfilePage}
         options={{
+          // headerShown: false,
           headerTransparent: true,
           headerTintColor: "white",
           drawerIcon: () => (
@@ -390,7 +418,7 @@ function HomePageNavigator({ navigation }) {
           },
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="about"
         component={AboutUs}
         options={{
@@ -417,7 +445,7 @@ function HomePageNavigator({ navigation }) {
             );
           },
         }}
-      />
+      /> */}
 
       {/* <Drawer.Screen
         name="nfts"

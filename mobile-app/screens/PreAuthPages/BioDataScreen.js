@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import {
   Alert,
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -21,7 +22,7 @@ export default function BioDataScreen({ navigation }) {
     if (category) {
       try {
         const response = await axios.post(
-          "http://172.20.10.3:3000/auth/signup",
+          "http://192.168.43.23:3000/auth/signup",
           {
             email: registrationData.email,
             password: registrationData.password,
@@ -30,6 +31,7 @@ export default function BioDataScreen({ navigation }) {
             category: category,
           }
         );
+        console.log("pressed");
 
         // console.log(response.ok);
         console.log(response.data);
@@ -49,23 +51,29 @@ export default function BioDataScreen({ navigation }) {
   };
 
   const chipCategories = [
-    { label: "Fashion Enthusiast", width: "44%" },
-    { label: "Fashion Investor", width: "50%" },
-    { label: "Fashion Icon", width: "60%" },
-    { label: "Creator", width: "30%" },
-    { label: "Blogger", width: "40%" },
-    { label: "Designer", width: "50%" },
+    { label: "Fashion Model", width: "44%" },
+    { label: "Blogger", width: "50%" },
+    { label: "Designer", width: "30%" },
+    { label: "Fashion Brand", width: "60%" },
+    { label: "Fashion Influencer", width: "60%" },
+    { label: "Merchant", width: "30%" },
+    { label: "Fashion Enthusiast", width: "50%" },
     { label: "Other", width: "40%" },
   ];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#16171B" }}>
+      <Image
+        style={{ position: "absolute", height: "60%", opacity: 0.4 }}
+        resizeMode="contain"
+        source={require("../../assets/jopiter-assets/splash-screen.png")}
+      />
       <ScrollView
         style={styles.page}
         contentContainerStyle={{ alignItems: "center" }}
       >
         <Text style={styles.header}>Welcome to Jopiter.io</Text>
-        <Text style={styles.subHeader}>How would you classify yourself?</Text>
+        <Text style={styles.subHeader}>Choose your community...</Text>
 
         <View style={styles.chipContainer}>
           {chipCategories.map((chip, index) => (
@@ -79,7 +87,7 @@ export default function BioDataScreen({ navigation }) {
               ]}
               selected={category === chip.label}
               onPress={() => setCategory(chip.label)}
-              textStyle={{ fontSize: 13, paddingHorizontal: 0, color: "white" }}
+              textStyle={{ fontSize: 13, paddingHorizontal: 0, color: "black" }}
             >
               {chip.label}
             </Chip>
@@ -102,13 +110,13 @@ const styles = StyleSheet.create({
     color: "white",
     marginBottom: 35,
     fontWeight: "bold",
-    alignSelf: "center",
+    alignSelf: "flex-start",
   },
   subHeader: {
     fontSize: 18,
     color: "white",
     marginBottom: 20,
-    textAlign: "center",
+    alignSelf: "flex-start",
   },
   chipContainer: {
     width: "100%",
@@ -119,12 +127,12 @@ const styles = StyleSheet.create({
   chip: {
     marginVertical: 10,
     marginHorizontal: 5,
-    backgroundColor: "#2E2F33",
-    height: 30,
+    backgroundColor: "#D9D9D9",
+    height: 80,
     justifyContent: "center",
     alignItems: "center",
   },
   selectedChip: {
-    backgroundColor: "#63ADF2",
+    backgroundColor: "#403F6B",
   },
 });

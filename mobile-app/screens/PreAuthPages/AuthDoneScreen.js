@@ -24,13 +24,13 @@ export default function AuthDoneScreen() {
       Animated.sequence([
         Animated.timing(fadeAnim, {
           toValue: 0.2,
-          duration: 2000, // Adjust duration as needed
+          duration: 1000, // Adjust duration as needed
           easing: Easing.ease, // Use linear easing for consistent transition
           useNativeDriver: true,
         }),
         Animated.timing(fadeAnim, {
           toValue: 0.6,
-          duration: 2000, // Adjust duration as needed
+          duration: 1000, // Adjust duration as needed
           easing: Easing.ease, // Use linear easing for consistent transition
           useNativeDriver: true,
         }),

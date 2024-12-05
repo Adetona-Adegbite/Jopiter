@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -7,14 +7,50 @@ import {
   View,
   Image,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
+  Pressable,
 } from "react-native";
-import { Feather, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { Feather, FontAwesome, Entypo, AntDesign } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 
-export default function HomePage() {
+export default function HomePage({ navigation }) {
   const route = useRoute();
   const { name } = route;
+  const [followStatus, setFollowStatus] = useState({}); // State for follow statuses
+
+  const toggleFollow = (id) => {
+    setFollowStatus((prevStatus) => ({
+      ...prevStatus,
+      [id]: !prevStatus[id], // Toggle the follow status
+    }));
+  };
+  const stories = [
+    {
+      id: 1,
+      username: "JohnDoe",
+      profilePic: "https://via.placeholder.com/50",
+    },
+    {
+      id: 2,
+      username: "JaneSmith",
+      profilePic: "https://via.placeholder.com/50",
+    },
+    {
+      id: 3,
+      username: "MikeRoss",
+      profilePic: "https://via.placeholder.com/50",
+    },
+    {
+      id: 4,
+      username: "RachelZane",
+      profilePic: "https://via.placeholder.com/50",
+    },
+    {
+      id: 5,
+      username: "HarveySpecter",
+      profilePic: "https://via.placeholder.com/50",
+    },
+  ];
 
   const posts = [
     {
@@ -74,9 +110,81 @@ export default function HomePage() {
     },
   ];
 
+  const renderStory = ({ item }) => (
+    <View style={styles.storyContainer}>
+      <Image style={styles.storyImage} />
+      <Text style={styles.storyUsername}>{item.username}</Text>
+    </View>
+  );
+
+  const renderPost = ({ item }) => {
+    const isFollowing = !!followStatus[item.id]; // Check follow status for the post
+
+    return (
+      <View style={styles.postContainer}>
+        <View style={styles.userInfo}>
+          <Image source={{ uri: item.profilePic }} style={styles.profilePic} />
+          <Pressable
+            onPress={() =>
+              navigation.navigate("ProfilePage", { username: item.username })
+            }
+            style={styles.userDetails}
+          >
+            <Text style={styles.userName}>{item.username}</Text>
+            <Text style={styles.timePosted}>{item.timePosted}</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => toggleFollow(item.id)}
+            style={{
+              marginLeft: "auto",
+              marginRight: 10,
+              backgroundColor: isFollowing ? "#4CAF50" : "#403F6B",
+              paddingVertical: 5,
+              paddingHorizontal: 8,
+              borderRadius: 10,
+            }}
+          >
+            <Text style={{ color: "white", fontWeight: "600" }}>
+              {isFollowing ? "Following" : "Follow"}
+            </Text>
+          </Pressable>
+        </View>
+        <Text style={styles.caption}>{item.caption}</Text>
+        <Image source={{ uri: item.postImage }} style={styles.postImage} />
+        <View style={styles.actions}>
+          <TouchableOpacity style={styles.actionButton}>
+            <FontAwesome name="heart-o" size={24} color="black" />
+            <Text style={styles.actionText}>{item.likes}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <Feather name="message-circle" size={24} color="black" />
+            <Text style={styles.actionText}>{item.comments}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <AntDesign name="shoppingcart" size={24} color="black" />
+            <Text style={styles.actionText}>{item.purchases}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton}>
+            <Entypo name="share" size={24} color="black" />
+            <Text style={styles.actionText}>{item.purchases}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#191919" }}>
       <View style={styles.page}>
+        <FlatList
+          data={stories}
+          renderItem={renderStory}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ alignItems: "center" }}
+          style={styles.storiesList}
+        />
         <View style={styles.searchBar}>
           <Feather name="search" size={24} color="white" />
           <TextInput
@@ -85,41 +193,13 @@ export default function HomePage() {
             placeholderTextColor="#59595B"
           />
         </View>
-        <ScrollView>
-          {posts.map((post) => (
-            <View key={post.id} style={styles.postContainer}>
-              <View style={styles.userInfo}>
-                <Image
-                  source={{ uri: post.profilePic }}
-                  style={styles.profilePic}
-                />
-                <View style={styles.userDetails}>
-                  <Text style={styles.userName}>{post.username}</Text>
-                  <Text style={styles.timePosted}>{post.timePosted}</Text>
-                </View>
-              </View>
-              <Text style={styles.caption}>{post.caption}</Text>
-              <Image
-                source={{ uri: post.postImage }}
-                style={styles.postImage}
-              />
-              <View style={styles.actions}>
-                <TouchableOpacity style={styles.actionButton}>
-                  <FontAwesome name="heart-o" size={24} color="white" />
-                  <Text style={styles.actionText}>{post.likes}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButton}>
-                  <Feather name="message-circle" size={24} color="white" />
-                  <Text style={styles.actionText}>{post.comments}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButton}>
-                  <MaterialIcons name="shopping-cart" size={24} color="white" />
-                  <Text style={styles.actionText}>{post.purchases}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
+
+        <FlatList
+          data={posts}
+          renderItem={renderPost}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
     </SafeAreaView>
   );
@@ -128,7 +208,7 @@ export default function HomePage() {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    paddingTop: 100,
+    paddingTop: 60,
     paddingHorizontal: 30,
   },
   searchBar: {
@@ -140,8 +220,30 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     marginBottom: 20,
   },
+  storiesList: {
+    marginBottom: 20,
+
+    paddingVertical: 30,
+  },
+  storyContainer: {
+    marginRight: 15,
+    width: 100,
+    height: 130,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#fff",
+    backgroundColor: "white",
+  },
+  storyImage: {
+    marginBottom: 5,
+  },
+  storyUsername: {
+    color: "white",
+    fontSize: 12,
+    textAlign: "center",
+  },
   postContainer: {
-    backgroundColor: "#333333",
+    backgroundColor: "#D9D9D9",
     padding: 8,
     borderRadius: 10,
     marginBottom: 20,
@@ -161,7 +263,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
   userName: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
   },
   timePosted: {
@@ -169,7 +271,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   caption: {
-    color: "white",
+    color: "black",
     marginBottom: 10,
   },
   postImage: {
@@ -187,7 +289,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   actionText: {
-    color: "white",
+    color: "black",
     marginLeft: 5,
   },
 });

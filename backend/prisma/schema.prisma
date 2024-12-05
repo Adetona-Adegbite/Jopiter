@@ -20,4 +20,27 @@ model User{
   hash String
   country String
   category String
+  SentMessages  Message[] @relation("SentMessages") 
+  ReceivedMessages Message[] @relation("ReceivedMessages") 
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  imageUrl  String
+  price     Int
+  tagline   String?
+  caption   String?
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  senderId   Int                                  
+  receiverId Int                                  
+  content    String                               
+  createdAt  DateTime @default(now())              
+  updatedAt  DateTime @updatedAt                  
+  Sender     User     @relation("SentMessages", fields: [senderId], references: [id]) 
+  Receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id]) 
 }

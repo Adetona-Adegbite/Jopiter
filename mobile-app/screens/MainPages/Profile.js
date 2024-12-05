@@ -7,10 +7,17 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
-import { Feather, FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import {
+  Feather,
+  FontAwesome,
+  MaterialIcons,
+  MaterialCommunityIcons,
+  Fontisto,
+} from "@expo/vector-icons";
 
-export default function Profile() {
+export default function Profile({ navigation }) {
   const posts = [
     {
       id: 1,
@@ -65,22 +72,44 @@ export default function Profile() {
 
           {/* Stats */}
           <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
+            <Pressable
+              onPress={() => navigation.navigate("followers")}
+              style={styles.statItem}
+            >
               <Text style={styles.statNumber}>150</Text>
               <Text style={styles.statLabel}>Followers</Text>
-            </View>
-            <View style={styles.statItem}>
+            </Pressable>
+            <Pressable
+              onPress={() => navigation.navigate("following")}
+              style={styles.statItem}
+            >
               <Text style={styles.statNumber}>100</Text>
               <Text style={styles.statLabel}>Following</Text>
-            </View>
-            <View style={styles.statItem}>
+            </Pressable>
+            <Pressable style={styles.statItem}>
               <Text style={styles.statNumber}>30</Text>
               <Text style={styles.statLabel}>Posts</Text>
-            </View>
+            </Pressable>
           </View>
 
           {/* Bio */}
           <Text style={styles.bio}>"I can draw myself"</Text>
+        </View>
+
+        <View style={styles.menuBar}>
+          <View style={styles.menuItem}>
+            <MaterialIcons name="grid-on" size={36} color="black" />
+          </View>
+          <View style={[styles.menuItem, { backgroundColor: "#3F426D" }]}>
+            <MaterialCommunityIcons
+              name="movie-outline"
+              size={36}
+              color="black"
+            />
+          </View>
+          <View style={styles.menuItem}>
+            <Fontisto name="shopping-store" size={32} color="black" />
+          </View>
         </View>
 
         {/* User Posts */}
@@ -120,6 +149,7 @@ const styles = StyleSheet.create({
   bannerContainer: {
     height: "27%",
     position: "relative",
+    marginTop: 60,
   },
   bannerImage: {
     width: "100%",
@@ -129,7 +159,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -50,
     left: "50%",
-    transform: [{ translateX: -50 }], // Center align the profile picture
+    transform: [{ translateX: -50 }],
   },
   profilePic: {
     width: 100,
@@ -180,6 +210,20 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     fontSize: 16,
     marginBottom: 20,
+  },
+  menuBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    marginBottom: 20,
+  },
+  menuItem: {
+    width: "31%",
+    height: 50,
+    borderRadius: 10,
+    backgroundColor: "#D9D9D9",
+    justifyContent: "center",
+    alignItems: "center",
   },
   postsContainer: {
     paddingHorizontal: 20,
